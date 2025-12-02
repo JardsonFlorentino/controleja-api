@@ -5,21 +5,46 @@ import { env } from "./config/env";
 import cors from "@fastify/cors";
 
 const app: FastifyInstance = Fastify({
- logger: {
- level: env.NODE_ENV === "dev" ? "info" : "error",
-}
+  logger: {
+    level: env.NODE_ENV === "dev" ? "info" : "error",
+  },
 });
-const allowedOrigins = env.CORS_ORIGIN === '*' 
-    ? true
-    : env.CORS_ORIGIN.split(',').map(url => url.trim());
+
+// ---------------------------------------------------------
+// CORS CORRIGIDO
+// Aceita localhost e domínio oficial
+// Não quebra se a variável de ambiente estiver vazia
+// ---------------------------------------------------------
+
+const originList = (
+  env.CORS_ORIGIN &&
+  env.CORS_ORIGIN !== "*" &&
+  env.CORS_ORIGIN.split(",").map(o => o.trim())
+) || [
+  "http://localhost:5173",
+  "https://controleja.jardsonflorentino.com.br"
+];
 
 app.register(cors, {
-origin: allowedOrigins,
-  
+  origin: (origin, cb) => {
+    // Permite requests sem origin (ex: Insomnia/Postman)
+    if (!origin) {
+      cb(null, true);
+      return;
+    }
 
- methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], 
+    if (originList.includes(origin)) {
+      cb(null, true);
+      return;
+    }
+
+    cb(new Error("Not allowed by CORS"), false);
+  },
+
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 });
 
+// Rotas com prefixo /api
 app.register(routes, { prefix: "/api" });
 
 export default app;
