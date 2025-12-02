@@ -1,50 +1,27 @@
+// app.ts
 import Fastify from "fastify";
-import type { FastifyInstance } from "fastify";
+import cors from "@fastify/cors";
 import routes from "./routes";
 import { env } from "./config/env";
-import cors from "@fastify/cors";
 
-const app: FastifyInstance = Fastify({
+const app = Fastify({
   logger: {
     level: env.NODE_ENV === "dev" ? "info" : "error",
   },
 });
 
-// ---------------------------------------------------------
-// CORS CORRIGIDO
-// Aceita localhost e domínio oficial
-// Não quebra se a variável de ambiente estiver vazia
-// ---------------------------------------------------------
+const allowedOrigins =
+  env.CORS_ORIGIN === "*"
+    ? true
+    : env.CORS_ORIGIN.split(",").map((url) => url.trim());
 
-const originList = (
-  env.CORS_ORIGIN &&
-  env.CORS_ORIGIN !== "*" &&
-  env.CORS_ORIGIN.split(",").map(o => o.trim())
-) || [
-  "http://localhost:5173",
-  "https://controleja.jardsonflorentino.com.br"
-];
-
+// registra CORS
 app.register(cors, {
-  origin: (origin, cb) => {
-    // Permite requests sem origin (ex: Insomnia/Postman)
-    if (!origin) {
-      cb(null, true);
-      return;
-    }
-
-    if (originList.includes(origin)) {
-      cb(null, true);
-      return;
-    }
-
-    cb(new Error("Not allowed by CORS"), false);
-  },
-
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 });
 
-// Rotas com prefixo /api
+// registra rotas
 app.register(routes, { prefix: "/api" });
 
 export default app;
