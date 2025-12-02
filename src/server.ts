@@ -5,25 +5,25 @@ import { env } from "./config/env";
 import initializeFirebaseAdmin from "./config/firebase";
 
 
-
 const PORT = env.PORT;
 
 initializeFirebaseAdmin();
 
 
 const startServer = async () => {
-    try {
+    try {
 
-        await prismaConnect();
+        await prismaConnect();
 
-        await initializeGlobalCategories();
+        await initializeGlobalCategories();
 
-        await app.listen({ port: PORT }).then(() => {
-            console.log(`Server is running on port ${PORT}`);
-        });
-    } catch (err) {
-        console.error(err);
-    }
+        
+        await app.listen({ port: PORT, host: '0.0.0.0' }).then(() => { 
+            console.log(`Server is running on port ${PORT}`);
+        });
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 startServer();
