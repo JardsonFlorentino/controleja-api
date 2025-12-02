@@ -1,3 +1,4 @@
+// src/app.ts
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import routes from "./routes";
@@ -9,7 +10,7 @@ const app = Fastify({
   },
 });
 
-// Loga toda requisição que chega na API
+// Log de toda request (inclusive OPTIONS)
 app.addHook("onRequest", (request, reply, done) => {
   console.log(
     "[REQ]",
@@ -21,25 +22,16 @@ app.addHook("onRequest", (request, reply, done) => {
   done();
 });
 
-// Função de CORS que (por enquanto) libera qualquer origem
-function checkOrigin(
-  origin: string | undefined,
-  cb: (err: Error | null, allow: boolean) => void,
-) {
-  console.log("[CORS DEBUG] Origin recebido:", origin);
-  // Libera todas as origens enquanto debugamos
-  cb(null, true);
-}
-
+// CORS: refletir qualquer origem automaticamente
 app.register(cors, {
-  origin: checkOrigin,
+  origin: true, // reflect origin para todas as requests [web:142][web:148]
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
   maxAge: 86400,
 });
 
-// Suas rotas da API, sempre com prefixo /api
+// Rotas com prefixo /api
 app.register(routes, { prefix: "/api" });
 
 export default app;
