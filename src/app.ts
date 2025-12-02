@@ -1,4 +1,4 @@
-// app.ts
+
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import routes from "./routes";
@@ -10,18 +10,24 @@ const app = Fastify({
   },
 });
 
-const allowedOrigins =
-  env.CORS_ORIGIN === "*"
-    ? true
-    : env.CORS_ORIGIN.split(",").map((url) => url.trim());
-
-// registra CORS
 app.register(cors, {
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  origin: (origin, cb) => {
+    const allowed = [
+      "http://localhost:5173",
+      "https://controleja.jardsonflorentino.com.br",
+    ];
+
+    if (!origin || allowed.includes(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Not allowed by CORS"), false);
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 });
 
-// registra rotas
 app.register(routes, { prefix: "/api" });
 
 export default app;
