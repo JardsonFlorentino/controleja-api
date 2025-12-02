@@ -9,13 +9,24 @@ const app = Fastify({
   },
 });
 
-// TESTE: libera qualquer origem
+// CORS configurado corretamente para Fastify
 app.register(cors, {
-  origin: true, // reflete qualquer Origin que chegar
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  origin: (origin, cb) => {
+    // Durante desenvolvimento/teste, aceita qualquer origem
+    // Você pode restringir depois se quiser
+    if (!origin || origin === 'null') {
+      cb(null, true);
+      return;
+    }
+    cb(null, true);
+  },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  exposedHeaders: ["Content-Range", "X-Content-Range"],
   maxAge: 86400,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 });
 
 app.register(routes, { prefix: "/api" });
