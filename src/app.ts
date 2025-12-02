@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import routes from "./routes";
 import { env } from "./config/env";
 
@@ -8,22 +9,18 @@ const app = Fastify({
   },
 });
 
-// CORS Manual - mais controle
-app.addHook('onRequest', async (request, reply) => {
-  const origin = request.headers.origin;
-  
-  // Define headers CORS manualmente
-  reply.header('Access-Control-Allow-Origin', origin || '*');
-  reply.header('Access-Control-Allow-Credentials', 'true');
-  reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  reply.header('Access-Control-Max-Age', '86400');
-  
-  // Responde imediatamente para OPTIONS (preflight)
-  if (request.method === 'OPTIONS') {
-    reply.status(204).send();
-    return;
-  }
+function checkOrigin(origin: string | undefined, cb: (err: Error | null, allow: boolean) => void) {
+  console.log("[CORS DEBUG] Origin recebido:", origin);
+  // por enquanto, libera tudo pra não travar
+  cb(null, true);
+}
+
+app.register(cors, {
+  origin: checkOrigin,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  maxAge: 86400,
 });
 
 app.register(routes, { prefix: "/api" });
