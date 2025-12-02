@@ -8,17 +8,16 @@ declare module "fastify" {
 }
 
 export const authMiddlewares = async (
-    request: FastifyRequest, 
+    request: FastifyRequest,
     reply: FastifyReply
 ): Promise<void> => {
 
-    // 💡 Corrige o CORS/preflight
+    // 🔥 Corrige o CORS/preflight (OPTIONS não precisa de token)
     if (request.method === "OPTIONS") {
-        return reply.status(200).send();
+        return reply.code(204).send();
     }
 
     const authHeader = request.headers.authorization;
-
     console.log("AUTH HEADER:", authHeader);
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -31,7 +30,7 @@ export const authMiddlewares = async (
 
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);
-        console.log(decodedToken);
+        console.log("TOKEN DECODIFICADO:", decodedToken);
 
         request.userId = decodedToken.uid;
 
