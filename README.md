@@ -3,8 +3,9 @@ API RESTful para gerenciamento de finanças pessoais, responsável por todas as 
 Fornece endpoints para transações, categorias, resumos mensais e histórico financeiro.
 
 ## 🌐 Projeto
-🔗 Frontend:[ https://github.com/JardsonFlorentino/devbills---interface](https://github.com/JardsonFlorentino/controleja-interface)
-🔗 Backend: [https://github.com/JardsonFlorentino/devbills---api/](https://github.com/JardsonFlorentino/controleja-api)
+- 🔗 Frontend:[ https://github.com/JardsonFlorentino/devbills---interface](https://github.com/JardsonFlorentino/controleja-interface)
+- 🔗 Backend: [https://github.com/JardsonFlorentino/devbills---api/](https://github.com/JardsonFlorentino/controleja-api)
+- 🔗 Aplicação online: [https://controleja.jardsonflorentino.com.br/](https://controleja.jardsonflorentino.com.br/)
 
 A ControleJá API é o backend de uma aplicação full stack de controle financeiro, desenvolvida como parte do curso Full Stack do DevClub.
 Ela foi construída com foco em boas práticas de API moderna:
