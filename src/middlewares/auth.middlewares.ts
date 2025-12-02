@@ -7,33 +7,37 @@ declare module "fastify" {
     }
 }
 
-
-export const authMiddlewares = async(
-    request: FastifyRequest, reply: FastifyReply
+export const authMiddlewares = async (
+    request: FastifyRequest, 
+    reply: FastifyReply
 ): Promise<void> => {
-const authHeader = request.headers.authorization;
 
-console.log("AUTH HEADER:", authHeader);
+    // 💡 Corrige o CORS/preflight
+    if (request.method === "OPTIONS") {
+        return reply.status(200).send();
+    }
 
-if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    reply.status(401).send({ error: "token not found"});
-    return;
+    const authHeader = request.headers.authorization;
 
-}
+    console.log("AUTH HEADER:", authHeader);
 
-const token = authHeader.replace("Bearer ", "");
-console.log("TOKEN RECEBIDO:", token)
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        reply.status(401).send({ error: "token not found" });
+        return;
+    }
 
+    const token = authHeader.replace("Bearer ", "");
+    console.log("TOKEN RECEBIDO:", token);
 
-try {
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    console.log(decodedToken);
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        console.log(decodedToken);
 
-    request.userId = decodedToken.uid;
-    
-} catch (error) {
-    request.log.error(error);
-    reply.status(401).send({ error: "invalid token"});
-    return;
-}
-}
+        request.userId = decodedToken.uid;
+
+    } catch (error) {
+        request.log.error(error);
+        reply.status(401).send({ error: "invalid token" });
+        return;
+    }
+};
