@@ -11,6 +11,8 @@ const envSchema = z.object({
   FIREBASE_CLIENT_EMAIL: z.string().min(1, 'FIREBASE_CLIENT_EMAIL is required'),
   FIREBASE_PRIVATE_KEY_BASE64: z.string().optional(),
   FIREBASE_PRIVATE_KEY: z.string().optional(),
+
+  CORS_ORIGIN: z.string().default('*'),
 });
 
 const _env = envSchema.safeParse(process.env);

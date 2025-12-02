@@ -4,17 +4,21 @@ import routes from "./routes";
 import { env } from "./config/env";
 import cors from "@fastify/cors";
 
-
 const app: FastifyInstance = Fastify({
-    logger: {
-        level: env.NODE_ENV === "dev" ? "info" : "error",
-    }
+ logger: {
+ level: env.NODE_ENV === "dev" ? "info" : "error",
+}
 });
+const allowedOrigins = env.CORS_ORIGIN === '*' 
+    ? true
+    : env.CORS_ORIGIN.split(',').map(url => url.trim());
 
 app.register(cors, {
-  origin: true,
-  methods: ["GET", "POST", "PUT", "DELETE, PATCH, OPTIONS"], 
-})
+origin: allowedOrigins,
+  
+
+ methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], 
+});
 
 app.register(routes, { prefix: "/api" });
 
